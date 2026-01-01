@@ -7,6 +7,7 @@ import (
 	"strings"
 	"net/http"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
+	"github.com/adammatthes/swiss_converter/internal/convert"
 )
 
 type UserRequest struct {
@@ -115,7 +116,20 @@ func ProcessConversion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := map[string]string{"result": fmt.Sprintf("%v", req.Value)}
+	function, err := convert.GetConversionFunction(req.StartType, req.EndType)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
+
+	result, err := function(req.Value)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
+
+
+	response := map[string]string{"result": fmt.Sprintf("%v", result)}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

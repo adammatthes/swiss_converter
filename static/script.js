@@ -66,8 +66,8 @@ async function getConversionResult() {
 	const url = '/api/convert'
 	const data = {
 		"category": category,
-		"startType": start,
-		"conversionType": end,
+		"start-type": start,
+		"end-type": end,
 		"value": value,
 	}
 
@@ -80,7 +80,9 @@ async function getConversionResult() {
 	});
 
 	if (!response.ok) {
-		throw new Error(`getConversionResult failed: ${response.status}`);
+		const errorMessage = await response.text();
+
+		throw new Error(`getConversionResult failed: ${errorMessage}`);
 	}
 
 	const result = await response.json();
