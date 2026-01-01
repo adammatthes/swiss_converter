@@ -19,9 +19,23 @@ func HexadecimalToDecimal(input string) (string, error) {
 	return fmt.Sprintf("%v", i64), nil
 }
 
+func HexadecimalToBinary(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, 16, 64)
+	if err != nil {
+		return "", fmt.Errorf("Invalid Number for conversion: %s", input)
+	}
+
+	return fmt.Sprintf("%b", i64), nil
+}
+
 func GetConversionFunction(start, end string) (func(string) (string, error), error) {
 	functions := map[string]func(string) (string, error) {
 		conversion_options.Hexadecimal + conversion_options.Decimal: HexadecimalToDecimal,
+		conversion_options.Hexadecimal + conversion_options.Binary: HexadecimalToBinary,
 	}
 
 	result, ok := functions[start+end]
