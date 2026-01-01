@@ -30,6 +30,7 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 func generateDropdownOptions(options []string) string {
 	var result []string
 
+	result = append(result, `<option disabled selected class="dropdownOptions">Select an option</option>`)
 	for _, option := range options {
 		nextOpt := fmt.Sprintf("<option class=\"dropdownOptions\">%s</option>", option)
 		result = append(result, nextOpt)
@@ -39,11 +40,11 @@ func generateDropdownOptions(options []string) string {
 }
 
 func ConversionMenu(w http.ResponseWriter, req *http.Request) {
-	startingOptions := []string{"Hexadecimal", "Decimal", "Binary", "Roman Numeral"}
+	startingOptions := []string{conversion_options.Base, conversion_options.Distance}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
-	firstDropdown := fmt.Sprintf(`<select id="startingTypeSelect" class=\"dropdownMenu\">%s</select>`, htmlOptions)
+	firstDropdown := fmt.Sprintf(`<select id="categorySelect" class=\"dropdownMenu\">%s</select>`, htmlOptions)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -61,6 +62,23 @@ func ConversionMenu(w http.ResponseWriter, req *http.Request) {
 	</body>
 	</html>
 	`, firstDropdown))
+}
+
+func GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
+	var req UserRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	}
+
+	options, err := conversion_options.GetTypesByCategory(req.Type)
+
+	response := map[string][]string{"options": options}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {

@@ -25,6 +25,31 @@ async function getConversionOptions(startingType) {
 	return result.options;
 }
 
+async function getStartingTypes(category) {
+	const url = '/api/get-starting-types';
+	const data = {value: 0, type: category};
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error(`getStartingTypes failed: ${response.status}`);
+	}
+
+	const result = await response.json();
+
+	if (!result.options) {
+		return ["No starting types found"];
+	}
+
+	return result.options;
+}
+
 function makeSelectElement(options, id) {
 	if (!options || options.length === 0) {
 		return
@@ -33,6 +58,12 @@ function makeSelectElement(options, id) {
 	const select = document.createElement('select');
 	select.className = 'dropdownMenu';
 	select.id = id;
+
+	const disabledOption = document.createElement('option');
+	disabledOption.disabled = true;
+	disabledOption.selected = true;
+	disabledOption.innerHTML = "Select an option";
+	select.appendChild(disabledOption);
 
 	for (let opt of options) {
 		const newOption = document.createElement('option');
@@ -46,6 +77,11 @@ function makeSelectElement(options, id) {
 
 function modifySelectOptions(targetSelect, newOptions) {
 	const newChildren = [];
+	const disabledOption = document.createElement('option');
+	disabledOption.disabled = true;
+	disabledOption.selected = true;
+	disabledOption.innerHTML = "Select an option";
+	newChildren.push(disabledOption);
 	for (let opt of newOptions) {
 		const newOpt = document.createElement('option');
 		newOpt.value = opt;
@@ -61,11 +97,12 @@ async function generateDestinationTypeSelect() {
 
 	const options = await getConversionOptions(selectedValue);
 
-	let destSelect = document.getElementById('destinationSelect');
+	let destSelect = document.getElementById('destinationTypeSelect');
 	if (!destSelect) {
-		destSelect = makeSelectElement(options, 'destinationSelect');
+		destSelect = makeSelectElement(options, 'destinationTypeSelect');
 	} else {
 		modifySelectOptions(destSelect, options);
+		return;
 	}
 
 	const menu = document.getElementById('conversionMenu');
@@ -73,6 +110,24 @@ async function generateDestinationTypeSelect() {
 
 }
 
-const firstDropDown = document.getElementById('startingTypeSelect');
-firstDropDown.addEventListener('change', async function() { generateDestinationTypeSelect();});
+async function generateStartingTypeSelect() {
+	const selectedValue = document.getElementById('categorySelect').value;
+	const options = await getStartingTypes(selectedValue);
+
+	let startSelect = document.getElementById('startingTypeSelect');
+	if (!startSelect) {
+		startSelect = makeSelectElement(options, 'startingTypeSelect');
+		startSelect.addEventListener('change', async function() { generateDestinationTypeSelect();});
+	} else {
+		modifySelectOptions(startSelect, options);
+		await generateDestinationTypeSelect();
+		return;
+	}
+
+	const menu = document.getElementById('conversionMenu');
+	menu.appendChild(startSelect);
+}
+
+const firstDropDown = document.getElementById('categorySelect');
+firstDropDown.addEventListener('change', async function() { generateStartingTypeSelect();});
 
