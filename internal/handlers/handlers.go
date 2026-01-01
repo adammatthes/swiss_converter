@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 	"net/http"
+	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 )
 
 type UserRequest struct {
@@ -15,6 +16,10 @@ type UserRequest struct {
 
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "<h1>Hello, world!</h1>")
+}
+
+func ServeIndexPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./static/index.html")
 }
 
 func ServeFavicon(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +64,9 @@ func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := map[string][]string{"options": []string{"Hexadecimal", "Decimal", "Binary"}}
+	options, err := conversion_options.GetConversionOptions(req.Type)
+
+	response := map[string][]string{"options": options}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
