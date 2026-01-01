@@ -105,9 +105,30 @@ async function generateDestinationTypeSelect() {
 		return;
 	}
 
+	destSelect.addEventListener('change', function() {
+		const input = createInputField();
+		if (input) {
+			const menu = document.getElementById('conversionMenu');
+			menu.appendChild(input);
+		}})
+
 	const menu = document.getElementById('conversionMenu');
 	menu.appendChild(destSelect);
 
+}
+
+function createInputField() {
+	let input = document.getElementById('userInput');
+	if (input) {
+		return null;
+	}
+
+	input = document.createElement('input');
+	input.id = 'userInput';
+	input.type = 'text';
+	input.className = 'inputField';
+
+	return input;
 }
 
 async function generateStartingTypeSelect() {
