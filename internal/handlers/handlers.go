@@ -39,17 +39,25 @@ func generateDropdownOptions(options []string) string {
 }
 
 func ConversionMenu(w http.ResponseWriter, req *http.Request) {
-	startingOptions := []string{"Hexadecimal", "Decimal", "Binary"}
+	startingOptions := []string{"Hexadecimal", "Decimal", "Binary", "Roman Numeral"}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
-	firstDropdown := fmt.Sprintf("<select class=\"dropdownMenu\">%s</select>", htmlOptions)
+	firstDropdown := fmt.Sprintf(`<select id="startingTypeSelect" class=\"dropdownMenu\">%s</select>`, htmlOptions)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	io.WriteString(w, fmt.Sprintf(`
 	<!DOCTYPE html>
-	<html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Swiss Converter</title>
+		<link rel="stylesheet" href="/static/style.css">
+	</head>
 	<body>
-	<div class="conversionMenu">%s</div>
+	<div id="conversionMenu">%s</div>
+	<script src="./static/script.js"></script>
 	</body>
 	</html>
 	`, firstDropdown))
