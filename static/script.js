@@ -50,6 +50,48 @@ async function getStartingTypes(category) {
 	return result.options;
 }
 
+async function getConversionResult() {
+	const categoryDrop = document.getElementById('categorySelect');
+	const category = categoryDrop.value;
+
+	const startType = document.getElementById('startingTypeSelect');
+	const start = startType.value;
+
+	const endType = document.getElementById('destinationTypeSelect');
+	const end = endType.value;
+
+	const input = document.getElementById('userInput')
+	const value = input.value;
+
+	const url = '/api/convert'
+	const data = {
+		"category": category,
+		"startType": start,
+		"conversionType": end,
+		"value": value,
+	}
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error(`getConversionResult failed: ${response.status}`);
+	}
+
+	const result = await response.json();
+
+	if (!result.result) {
+		return "Invalid Input"
+	}
+
+	return result.result
+}
+
 function makeSelectElement(options, id) {
 	if (!options || options.length === 0) {
 		return
@@ -127,6 +169,20 @@ function createInputField() {
 	input.id = 'userInput';
 	input.type = 'text';
 	input.className = 'inputField';
+
+	input.addEventListener('change', async function() {
+		const result = await getConversionResult();
+
+		let display = document.getElementById('resultOutput');
+		if (!display) {
+			display = document.createElement('p');
+			display.id = 'resultOutput';
+
+			const menu = document.getElementById('conversionMenu');
+			menu.appendChild(display);
+		}
+		display.innerHTML = result;
+	});
 
 	return input;
 }

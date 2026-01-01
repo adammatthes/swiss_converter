@@ -45,6 +45,7 @@ func main() {
 
 	mux.HandleFunc("/api/get-conversion-options", handlers.GenerateTargetOptions)
 	mux.HandleFunc("/api/get-starting-types", handlers.GenerateStartingOptions)
+	mux.HandleFunc("/api/convert", handlers.ProcessConversion)
 
 	http.ListenAndServe(":8080", mux)
 }

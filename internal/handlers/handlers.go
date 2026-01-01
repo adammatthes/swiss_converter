@@ -14,6 +14,13 @@ type UserRequest struct {
 	Type string `json:"type"`
 }
 
+type ConversionRequest struct {
+	Category string `json:"category"`
+	StartType string `json:"start-type"`
+	EndType string `json:"end-type"`
+	Value	string `json:"value"`
+}
+
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "<h1>Hello, world!</h1>")
 }
@@ -93,6 +100,22 @@ func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
 	options, err := conversion_options.GetConversionOptions(req.Type)
 
 	response := map[string][]string{"options": options}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func ProcessConversion(w http.ResponseWriter, r *http.Request) {
+	var req ConversionRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	response := map[string]string{"result": fmt.Sprintf("%v", req.Value)}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
