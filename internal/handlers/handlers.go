@@ -17,6 +17,11 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "<h1>Hello, world!</h1>")
 }
 
+func ServeFavicon(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "public, max-age=31536000")
+	http.ServeFile(w, r, "./static/favicon.ico")
+}
+
 func generateDropdownOptions(options []string) string {
 	var result []string
 
@@ -35,7 +40,14 @@ func ConversionMenu(w http.ResponseWriter, req *http.Request) {
 
 	firstDropdown := fmt.Sprintf("<select class=\"dropdownMenu\">%s</select>", htmlOptions)
 
-	io.WriteString(w, fmt.Sprintf(`<div class="conversionMenu">%s</div>`, firstDropdown))
+	io.WriteString(w, fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<body>
+	<div class="conversionMenu">%s</div>
+	</body>
+	</html>
+	`, firstDropdown))
 }
 
 func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
