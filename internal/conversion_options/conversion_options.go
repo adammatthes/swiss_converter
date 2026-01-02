@@ -28,6 +28,15 @@ const Miles = "Miles"
 const Kilometers = "Kilometers"
 const Meters = "Meters"
 const Yards = "Yards"
+const MilesKM = Miles + Kilometers
+const MilesMeters = Miles + Meters
+const MilesYards = Miles + Yards
+const KMMiles = Kilometers + Miles
+const KMMeters = Kilometers + Meters
+const KMYards = Kilometers + Yards
+const MetersMiles = Meters + Miles
+const MetersKM = Meters + Kilometers
+const MetersYards = Meters + Yards
 
 func GetTypesByCategory(category string) ([]string, error) {
 	categoryMap := map[string][]string{

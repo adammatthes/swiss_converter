@@ -180,6 +180,20 @@ func BinaryToRoman(input string) (string, error) {
 	return result, nil
 }
 
+func MilesToKilometers(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	f64, err := strconv.ParseFloat(input, 64)
+	if err != nil {
+		return "", nil
+	}
+
+	result := fmt.Sprintf("%v", f64 * 1.60934)
+	return result, nil
+}
+
 func GetConversionFunction(start, end string) (func(string) (string, error), error) {
 	functions := map[string]func(string) (string, error) {
 		conversion_options.HexDec: HexadecimalToDecimal,
@@ -191,6 +205,7 @@ func GetConversionFunction(start, end string) (func(string) (string, error), err
 		conversion_options.BinHex: BinaryToHexadecimal,
 		conversion_options.BinDec: BinaryToDecimal,
 		conversion_options.BinRom: BinaryToRoman,
+		conversion_options.MilesKM: MilesToKilometers,
 	}
 
 	result, ok := functions[start+end]
