@@ -96,11 +96,101 @@ func DecimalToRoman(input string) (string, error) {
 	return result, nil
 }
 
+func HexadecimalToRoman(input string) (string, error) {
+	dec, err := HexadecimalToDecimal(input)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := DecimalToRoman(dec)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func DecimalToHexadecimal(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, 10, 64)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%X", i64)
+	return result, nil
+}
+
+func DecimalToBinary(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, 10, 64)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%b", i64)
+	return result, nil
+}
+
+func BinaryToHexadecimal(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, 2, 64)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%X", i64)
+	return result, nil
+}
+
+func BinaryToDecimal(input string) (string, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, 2, 64)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", i64)
+	return result, nil
+}
+
+func BinaryToRoman(input string) (string, error) {
+	dec, err := BinaryToDecimal(input)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := DecimalToRoman(dec)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
 func GetConversionFunction(start, end string) (func(string) (string, error), error) {
 	functions := map[string]func(string) (string, error) {
 		conversion_options.HexDec: HexadecimalToDecimal,
 		conversion_options.HexBin: HexadecimalToBinary,
 		conversion_options.DecRom: DecimalToRoman,
+		conversion_options.HexRom: HexadecimalToRoman,
+		conversion_options.DecHex: DecimalToHexadecimal,
+		conversion_options.DecBin: DecimalToBinary,
+		conversion_options.BinHex: BinaryToHexadecimal,
+		conversion_options.BinDec: BinaryToDecimal,
+		conversion_options.BinRom: BinaryToRoman,
 	}
 
 	result, ok := functions[start+end]
