@@ -149,22 +149,44 @@ async function generateDestinationTypeSelect() {
 		return;
 	}
 
-	destSelect.addEventListener('change', function() {
-		const input = createInputField();
+	destSelect.addEventListener('change', async function() {
+		let input = createInputField();
 		if (input) {
 			const menu = document.getElementById('conversionMenu');
 			menu.appendChild(input);
-		}})
+			return;
+		}
+		input = document.getElementById('userInput');
+		if (input.value) {
+			await submitInput();
+		}
+	});
 
 	const menu = document.getElementById('conversionMenu');
 	menu.appendChild(destSelect);
 
 }
 
+async function submitInput() {
+	const result = await getConversionResult();
+
+	let display = document.getElementById('resultOutput');
+	if (!display) {
+		display = document.createElement('p');
+		display.id = 'resultOutput';
+
+		const menu = document.getElementById('conversionMenu');
+		menu.appendChild(display);
+	}
+	display.innerHTML = '';
+	display.innerHTML = result;
+}
+
+
 function createInputField() {
 	let input = document.getElementById('userInput');
 	if (input) {
-		return null;
+		return;
 	}
 
 	input = document.createElement('input');
@@ -172,20 +194,7 @@ function createInputField() {
 	input.type = 'text';
 	input.className = 'inputField';
 
-	input.addEventListener('change', async function() {
-		const result = await getConversionResult();
-
-		let display = document.getElementById('resultOutput');
-		if (!display) {
-			display = document.createElement('p');
-			display.id = 'resultOutput';
-
-			const menu = document.getElementById('conversionMenu');
-			menu.appendChild(display);
-		}
-		display.innerHTML = result;
-	});
-
+	input.addEventListener('input', submitInput);
 	return input;
 }
 
