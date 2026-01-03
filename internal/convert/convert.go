@@ -360,7 +360,7 @@ func MetersToYards(input string) (string, error) {
 		return "", err
 	}
 
-	result := fmt.Sprintf("$v", f64 * 1.09361)
+	result := fmt.Sprintf("%v", f64 * 1.09361)
 	return result, nil
 }
 
