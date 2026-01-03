@@ -116,6 +116,11 @@ func ProcessConversion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if (req.StartType == "Select an option" || req.EndType == "Select an option") {
+		http.Error(w, "Missing starting or ending conversion type", http.StatusBadRequest)
+		return
+	}
+
 	function, err := convert.GetConversionFunction(req.StartType, req.EndType)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)

@@ -157,7 +157,9 @@ async function generateDestinationTypeSelect() {
 			return;
 		}
 		input = document.getElementById('userInput');
-		if (input.value) {
+		const dest = document.getElementById('destinationTypeSelect');
+		const start = document.getElementById('startingTypeSelect');
+		if (input.value && start.value != 'Select an option' && dest.value != 'Select an option') {
 			await submitInput();
 		}
 	});
@@ -168,6 +170,12 @@ async function generateDestinationTypeSelect() {
 }
 
 async function submitInput() {
+	const start = document.getElementById('startingTypeSelect');
+	const dest = document.getElementById('destinationTypeSelect');
+	if (start.value === 'Select an option' || dest.value === 'Select an option') {
+		return;
+	}
+
 	const result = await getConversionResult();
 
 	let display = document.getElementById('resultOutput');
