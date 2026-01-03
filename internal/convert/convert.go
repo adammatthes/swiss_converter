@@ -2,7 +2,9 @@ package convert
 
 import (
 	"strconv"
+	"strings"
 	"fmt"
+	"regexp"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 )
 
@@ -178,6 +180,38 @@ func BinaryToRoman(input string) (string, error) {
 	return result, nil
 }
 
+func RomanToDecimal(input string) (string, error) {
+	convertMap := map[byte]int {
+		'M': 1000,
+		'D': 500,
+		'C': 100,
+		'L': 50,
+		'X': 10,
+		'V': 5,
+		'I': 1,
+	}
+
+	roman := strings.ToUpper(input)
+	total := 0
+
+	pattern := "^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$"
+	matched, err := regexp.Match(pattern, []byte(roman))
+	if !matched || err != nil {
+		return "", fmt.Errorf("Invalid Roman Numeral: %v", roman)
+	}
+
+	for n := 0; n < len(roman); n++ {
+		if n + 1 < len(roman) && convertMap[roman[n]] < convertMap[roman[n+1]] {
+			total -= convertMap[roman[n]]
+		} else {
+			total += convertMap[roman[n]]
+		}
+	}
+
+	result := fmt.Sprintf("%v", total)
+	return result, nil
+}
+
 func MilesToKilometers(input string) (string, error) {
 	f64, err := getFloat(input)
 	if err != nil {
@@ -325,6 +359,7 @@ func GetConversionFunction(start, end string) (func(string) (string, error), err
 		conversion_options.MetersMiles: MetersToMiles,
 		conversion_options.MetersKM: MetersToKilometers,
 		conversion_options.MetersYards: MetersToYards,
+		conversion_options.RomDec: RomanToDecimal,
 	}
 
 	result, ok := functions[start+end]
