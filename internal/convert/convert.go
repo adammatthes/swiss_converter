@@ -212,6 +212,34 @@ func RomanToDecimal(input string) (string, error) {
 	return result, nil
 }
 
+func RomanToHexadecimal(input string) (string, error) {
+	dec, err := RomanToDecimal(input)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := DecimalToHexadecimal(dec)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func RomanToBinary(input string) (string, error) {
+	dec, err := RomanToDecimal(input)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := DecimalToBinary(dec)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
 func MilesToKilometers(input string) (string, error) {
 	f64, err := getFloat(input)
 	if err != nil {
@@ -360,6 +388,8 @@ func GetConversionFunction(start, end string) (func(string) (string, error), err
 		conversion_options.MetersKM: MetersToKilometers,
 		conversion_options.MetersYards: MetersToYards,
 		conversion_options.RomDec: RomanToDecimal,
+		conversion_options.RomHex: RomanToHexadecimal,
+		conversion_options.RomBin: RomanToBinary,
 	}
 
 	result, ok := functions[start+end]
