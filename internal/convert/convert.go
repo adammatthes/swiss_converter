@@ -6,25 +6,43 @@ import (
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 )
 
-func HexadecimalToDecimal(input string) (string, error) {
+func getFloat(input string) (float64, error) {
 	if input[0] == '-' {
 		input = input[1:]
 	}
 
-	i64, err := strconv.ParseUint(input, 16, 64)
+	f64, err := strconv.ParseFloat(input, 64)
 	if err != nil {
-		return "", fmt.Errorf("Invalid Number for conversion: %s", input)
+		return 0.0, err
+	}
+
+	return f64, nil
+}
+
+func getInt(input string, base int) (uint64, error) {
+	if input[0] == '-' {
+		input = input[1:]
+	}
+
+	i64, err := strconv.ParseUint(input, base, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return i64, nil
+}
+
+func HexadecimalToDecimal(input string) (string, error) {
+	i64, err := getInt(input, 16)
+	if err != nil {
+		return "", err
 	}
 
 	return fmt.Sprintf("%v", i64), nil
 }
 
 func HexadecimalToBinary(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 16, 64)
+	i64, err := getInt(input, 16)
 	if err != nil {
 		return "", fmt.Errorf("Invalid Number for conversion: %s", input)
 	}
@@ -33,11 +51,7 @@ func HexadecimalToBinary(input string) (string, error) {
 }
 
 func DecimalToRoman(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 10, 64)
+	i64, err := getInt(input, 10)
 	if err != nil {
 		return "", fmt.Errorf("Invalid Number for conversion: %s", input)
 	}
@@ -111,11 +125,7 @@ func HexadecimalToRoman(input string) (string, error) {
 }
 
 func DecimalToHexadecimal(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 10, 64)
+	i64, err := getInt(input, 10)
 	if err != nil {
 		return "", err
 	}
@@ -125,11 +135,7 @@ func DecimalToHexadecimal(input string) (string, error) {
 }
 
 func DecimalToBinary(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 10, 64)
+	i64, err := getInt(input, 10)
 	if err != nil {
 		return "", err
 	}
@@ -139,11 +145,7 @@ func DecimalToBinary(input string) (string, error) {
 }
 
 func BinaryToHexadecimal(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 2, 64)
+	i64, err := getInt(input, 2)
 	if err != nil {
 		return "", err
 	}
@@ -153,11 +155,7 @@ func BinaryToHexadecimal(input string) (string, error) {
 }
 
 func BinaryToDecimal(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	i64, err := strconv.ParseUint(input, 2, 64)
+	i64, err := getInt(input, 2)
 	if err != nil {
 		return "", err
 	}
@@ -181,11 +179,7 @@ func BinaryToRoman(input string) (string, error) {
 }
 
 func MilesToKilometers(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	f64, err := strconv.ParseFloat(input, 64)
+	f64, err := getFloat(input)
 	if err != nil {
 		return "", err
 	}
@@ -195,11 +189,7 @@ func MilesToKilometers(input string) (string, error) {
 }
 
 func KilometersToMeters(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	f64, err := strconv.ParseFloat(input, 64)
+	f64, err := getFloat(input)
 	if err != nil {
 		return "", err
 	}
@@ -209,10 +199,6 @@ func KilometersToMeters(input string) (string, error) {
 }
 
 func MilesToMeters(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
 	km, err := MilesToKilometers(input)
 	if err != nil {
 		return "", err
@@ -227,11 +213,7 @@ func MilesToMeters(input string) (string, error) {
 }
 
 func MilesToYards(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	f64, err := strconv.ParseFloat(input, 64)
+	f64, err := getFloat(input)
 	if err != nil {
 		return "", err
 	}
@@ -241,11 +223,7 @@ func MilesToYards(input string) (string, error) {
 }
 
 func KilometersToMiles(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	f64, err := strconv.ParseFloat(input, 64)
+	f64, err := getFloat(input)
 	if err != nil {
 		return "", err
 	}
@@ -255,16 +233,72 @@ func KilometersToMiles(input string) (string, error) {
 }
 
 func KilometersToYards(input string) (string, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
-	f64, err := strconv.ParseFloat(input, 64)
+	f64, err := getFloat(input)
 	if err != nil {
 		return "", err
 	}
 
 	result := fmt.Sprintf("%v", f64 * 1093.61)
+	return result, nil
+}
+
+func YardsToKilometers(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 * 0.0009144)
+	return result, nil
+}
+
+func YardsToMiles(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 * 0.000568182)
+	return result, nil
+}
+
+func YardsToMeters(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 * 0.9144)
+	return result, nil
+}
+
+func MetersToMiles(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 * 0.000621371)
+	return result, nil
+}
+
+func MetersToKilometers(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 * 0.001)
+	return result, nil
+}
+
+func MetersToYards(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("$v", f64 * 1.09361)
 	return result, nil
 }
 
@@ -285,6 +319,12 @@ func GetConversionFunction(start, end string) (func(string) (string, error), err
 		conversion_options.KMMiles: KilometersToMiles,
 		conversion_options.KMMeters: KilometersToMeters,
 		conversion_options.KMYards: KilometersToYards,
+		conversion_options.YardsKM: YardsToKilometers,
+		conversion_options.YardsMiles: YardsToMiles,
+		conversion_options.YardsMeters: YardsToMeters,
+		conversion_options.MetersMiles: MetersToMiles,
+		conversion_options.MetersKM: MetersToKilometers,
+		conversion_options.MetersYards: MetersToYards,
 	}
 
 	result, ok := functions[start+end]
