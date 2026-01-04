@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"fmt"
 	"github.com/adammatthes/swiss_converter/internal/handlers"
+	"github.com/adammatthes/swiss_converter/internal/database"
 )
 
 //go:embed static/*
@@ -33,6 +34,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	db := database.SetupDatabase()
+
 	mux := http.NewServeMux()
 
 
@@ -47,5 +50,8 @@ func main() {
 	mux.HandleFunc("/api/get-starting-types", handlers.GenerateStartingOptions)
 	mux.HandleFunc("/api/convert", handlers.ProcessConversion)
 
+	log.Println("Server starting on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)
+
+	db.Close()
 }

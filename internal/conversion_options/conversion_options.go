@@ -6,6 +6,7 @@ import (
 
 const Base = "Number Base"
 const Distance = "Distance"
+const Currency = "Currency"
 
 const Hexadecimal = "Hexadecimal"
 const Decimal = "Decimal"
@@ -41,10 +42,28 @@ const YardsKM = Yards + Kilometers
 const YardsMiles = Yards + Miles
 const YardsMeters = Yards + Meters
 
+const USDollar = "US Dollar"
+const CanDollar = "Canandian Dollar"
+const Peso = "Peso"
+const Euro = "Euro"
+const USCan = USDollar + CanDollar
+const USPeso = USDollar + Peso
+const USEuro = USDollar + Euro
+const CanUS = CanDollar + USDollar
+const CanPeso = CanDollar + Peso
+const CanEuro = CanDollar + Euro
+const PesoUs = Peso + USDollar
+const PesoCan = Peso + CanDollar
+const PesoEuro = Peso + Euro
+const EuroUS = Euro + USDollar
+const EuroCan = Euro + CanDollar
+const EuroPeso = Euro + Peso
+
 func GetTypesByCategory(category string) ([]string, error) {
 	categoryMap := map[string][]string{
 		Base: []string{Hexadecimal, Decimal, Binary, Roman},
 		Distance: []string{Miles, Kilometers, Meters, Yards},
+		Currency: []string{USDollar, CanDollar, Peso, Euro},
 	}
 
 	result, ok := categoryMap[category]
@@ -67,6 +86,11 @@ func GetConversionOptions(startingType string) ([]string, error) {
 		Kilometers: []string{Miles, Meters, Yards},
 		Meters: []string{Miles, Kilometers, Yards},
 		Yards: []string{Miles, Kilometers, Meters},
+
+		USDollar: []string{CanDollar, Peso, Euro},
+		CanDollar: []string{USDollar, Peso, Euro},
+		Peso: []string{USDollar, CanDollar, Euro},
+		Euro: []string{USDollar, CanDollar, Peso},
 	}
 
 	result, ok := conversionMap[startingType]
