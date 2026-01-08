@@ -43,7 +43,7 @@ const YardsMiles = Yards + Miles
 const YardsMeters = Yards + Meters
 
 const USDollar = "US Dollar"
-const CanDollar = "Canandian Dollar"
+const CanDollar = "Canadian Dollar"
 const Peso = "Peso"
 const Euro = "Euro"
 const USCan = USDollar + CanDollar

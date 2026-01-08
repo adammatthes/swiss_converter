@@ -35,20 +35,24 @@ func main() {
 	}
 
 	db := database.SetupDatabase()
+	queries := database.New(db)
+
+	app := handlers.Application{Db : db, Queries: queries}
 
 	mux := http.NewServeMux()
 
 
 	mux.Handle("/static/", http.StripPrefix("/static/", endpoint))
 
-	mux.HandleFunc("/hello", handlers.HelloHandler)
-	mux.HandleFunc("/", handlers.ServeIndexPage)
-	mux.HandleFunc("/favicon.ico", handlers.ServeFavicon)
-	mux.HandleFunc("/home", handlers.ConversionMenu)
+	mux.HandleFunc("/hello", app.HelloHandler)
+	mux.HandleFunc("/", app.ServeIndexPage)
+	mux.HandleFunc("/favicon.ico", app.ServeFavicon)
+	mux.HandleFunc("/home", app.ConversionMenu)
 
-	mux.HandleFunc("/api/get-conversion-options", handlers.GenerateTargetOptions)
-	mux.HandleFunc("/api/get-starting-types", handlers.GenerateStartingOptions)
-	mux.HandleFunc("/api/convert", handlers.ProcessConversion)
+	mux.HandleFunc("/api/get-conversion-options", app.GenerateTargetOptions)
+	mux.HandleFunc("/api/get-starting-types", app.GenerateStartingOptions)
+	mux.HandleFunc("/api/convert", app.ProcessConversion)
+	mux.HandleFunc("/api/currency", app.ProcessCurrency)
 
 	log.Println("Server starting on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)

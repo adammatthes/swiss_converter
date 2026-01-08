@@ -6,9 +6,18 @@ import (
 	"encoding/json"
 	"strings"
 	"net/http"
+	"database/sql"
+	"strconv"
+	"context"
+	"github.com/adammatthes/swiss_converter/internal/database"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 	"github.com/adammatthes/swiss_converter/internal/convert"
 )
+
+type Application struct {
+	Db	*sql.DB
+	Queries	*database.Queries
+}
 
 type UserRequest struct {
 	Value string `json:"name"`
@@ -22,15 +31,15 @@ type ConversionRequest struct {
 	Value	string `json:"value"`
 }
 
-func HelloHandler(w http.ResponseWriter, req *http.Request) {
+func (app *Application) HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "<h1>Hello, world!</h1>")
 }
 
-func ServeIndexPage(w http.ResponseWriter, r *http.Request) {
+func (app *Application) ServeIndexPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./static/index.html")
 }
 
-func ServeFavicon(w http.ResponseWriter, r *http.Request) {
+func (app *Application) ServeFavicon(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "public, max-age=31536000")
 	http.ServeFile(w, r, "./static/favicon.ico")
 }
@@ -47,8 +56,8 @@ func generateDropdownOptions(options []string) string {
 	return strings.Join(result, "\n")
 }
 
-func ConversionMenu(w http.ResponseWriter, req *http.Request) {
-	startingOptions := []string{conversion_options.Base, conversion_options.Distance}
+func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request) {
+	startingOptions := []string{conversion_options.Base, conversion_options.Distance, conversion_options.Currency}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
@@ -72,7 +81,7 @@ func ConversionMenu(w http.ResponseWriter, req *http.Request) {
 	`, firstDropdown))
 }
 
-func GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
 	var req UserRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -89,7 +98,7 @@ func GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
 	var req UserRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -107,7 +116,7 @@ func GenerateTargetOptions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func ProcessConversion(w http.ResponseWriter, r *http.Request) {
+func (app *Application) ProcessConversion(w http.ResponseWriter, r *http.Request) {
 	var req ConversionRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -135,6 +144,37 @@ func ProcessConversion(w http.ResponseWriter, r *http.Request) {
 
 
 	response := map[string]string{"result": fmt.Sprintf("%v", result)}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) {
+	var req ConversionRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	start := req.StartType
+	end := req.EndType
+
+	exchangeRate, err := app.Queries.GetExchangeRate(context.Background(), start+end)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
+
+	startVal, err := strconv.ParseFloat(req.Value, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
+
+	response := map[string]string{"result": fmt.Sprintf("%v", startVal * exchangeRate)}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

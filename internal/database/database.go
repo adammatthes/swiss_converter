@@ -18,7 +18,6 @@ func SetupDatabase() *sql.DB {
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
-	defer db.Close()
 
 	err = goose.SetDialect("sqlite3")
 	if err != nil {

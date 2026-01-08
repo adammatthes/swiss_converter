@@ -60,10 +60,10 @@ async function getConversionResult() {
 	const endType = document.getElementById('destinationTypeSelect');
 	const end = endType.value;
 
-	const input = document.getElementById('userInput')
+	const input = document.getElementById('userInput');
 	const value = input.value;
 
-	const url = '/api/convert'
+	const url = category === 'Currency' ? '/api/currency': '/api/convert';
 	const data = {
 		"category": category,
 		"start-type": start,

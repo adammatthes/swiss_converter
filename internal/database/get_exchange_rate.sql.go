@@ -3,7 +3,7 @@
 //   sqlc v1.29.0
 // source: get_exchange_rate.sql
 
-package generated
+package database
 
 import (
 	"context"
