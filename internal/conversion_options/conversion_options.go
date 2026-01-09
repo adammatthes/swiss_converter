@@ -7,6 +7,7 @@ import (
 const Base = "Number Base"
 const Distance = "Distance"
 const Currency = "Currency"
+const Custom = "Custom"
 
 const Hexadecimal = "Hexadecimal"
 const Decimal = "Decimal"
@@ -58,6 +59,7 @@ const PesoEuro = Peso + Euro
 const EuroUS = Euro + USDollar
 const EuroCan = Euro + CanDollar
 const EuroPeso = Euro + Peso
+
 
 func GetTypesByCategory(category string) ([]string, error) {
 	categoryMap := map[string][]string{

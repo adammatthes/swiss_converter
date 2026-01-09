@@ -172,7 +172,8 @@ async function generateDestinationTypeSelect() {
 async function submitInput() {
 	const start = document.getElementById('startingTypeSelect');
 	const dest = document.getElementById('destinationTypeSelect');
-	if (start.value === 'Select an option' || dest.value === 'Select an option') {
+	const ipt = document.getElementById('userInput');
+	if (start.value === 'Select an option' || dest.value === 'Select an option' || !ipt.value) {
 		return;
 	}
 
@@ -224,6 +225,36 @@ async function generateStartingTypeSelect() {
 	menu.appendChild(startSelect);
 }
 
+function generateCustomGenerationFields() {
+	if (document.getElementById('customGenerationSubmitButton')) {
+		return;
+	}
+
+	const customFields = document.getElementById("customRateFields");
+	
+	const firstInput = document.createElement("input");
+	firstInput.type = 'text';
+	firstInput.id = 'customStartInput';
+	const secondInput = document.createElement("input");
+	secondInput.type = 'text';
+	secondInput.id = 'customEndInput';
+	const thirdInput = document.createElement("input");
+	thirdInput.type = 'text';
+	thirdInput.id = 'customExchangeRateInput';
+	const submitGeneration = document.createElement("button");
+	submitGeneration.id = 'customGenerationSubmitButton';
+	submitGeneration.textContent = 'Generate Conversion';
+
+
+
+	customFields.appendChild(firstInput);
+	customFields.appendChild(secondInput);
+	customFields.appendChild(thirdInput);
+	customFields.appendChild(submitGeneration);
+}
+
 const firstDropDown = document.getElementById('categorySelect');
 firstDropDown.addEventListener('change', async function() { generateStartingTypeSelect();});
 
+const addButton = document.getElementById('customRateInitiator');
+addButton.addEventListener('click', function() { generateCustomGenerationFields();});

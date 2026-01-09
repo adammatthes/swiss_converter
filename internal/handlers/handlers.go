@@ -56,12 +56,18 @@ func generateDropdownOptions(options []string) string {
 	return strings.Join(result, "\n")
 }
 
+func generateAddButton() string {
+	return `<button id="customRateInitiator">Add a New Conversion</button><div id="customRateFields"></div>`
+}
+
 func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request) {
 	startingOptions := []string{conversion_options.Base, conversion_options.Distance, conversion_options.Currency}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
 	firstDropdown := fmt.Sprintf(`<select id="categorySelect" class=\"dropdownMenu\">%s</select>`, htmlOptions)
+
+	button := generateAddButton()
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -75,10 +81,11 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 	</head>
 	<body>
 	<div id="conversionMenu">%s</div>
+	<div id="customGenerationSection">%s</div>
 	<script src="./static/script.js"></script>
 	</body>
 	</html>
-	`, firstDropdown))
+	`, firstDropdown, button))
 }
 
 func (app *Application) GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
@@ -179,4 +186,13 @@ func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func (app *Application) GetCustomOptions() ([]string) {
+	//options, err := app.Queries.GetStartingCustomOptions(context.Background())
+	//if err != nil {
+		//return []string{"No Custom Options Found"}
+	//}
+
+	return []string{}
 }

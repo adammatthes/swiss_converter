@@ -13,3 +13,11 @@ type CurrencyExchange struct {
 	ExchangeRate        float64
 	LastUpdated         sql.NullTime
 }
+
+type UserConversion struct {
+	ConversionID int64
+	StartType    string
+	EndType      string
+	ExchangeRate float64
+	LastUpdated  sql.NullTime
+}
