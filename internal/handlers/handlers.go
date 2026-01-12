@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"database/sql"
 	"strconv"
+	"context"
 	"github.com/adammatthes/swiss_converter/internal/database"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 	"github.com/adammatthes/swiss_converter/internal/convert"
@@ -273,8 +274,37 @@ func (app *Application) CreateConversion(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
+	err = app.DeduceNewConversions(start, end, rate)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	response := map[string]bool{"success":true}
+	response := map[string]any{"success":true, "error": err}
 	json.NewEncoder(w).Encode(response)
+}
+
+func (app *Application) DeduceNewConversions(start_type, end_type string, rate float64) error {
+	inverse_rate := 1.0 / rate
+	gcerParams := database.GetCustomExchangeRateParams{StartType: end_type, EndType: start_type}
+
+	_, err := app.Queries.GetCustomExchangeRate(context.Background(), gcerParams)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			accParams := database.AddCustomConversionParams{StartType: end_type, EndType: start_type, ExchangeRate: inverse_rate}
+			err = app.Queries.AddCustomConversion(context.Background(), accParams)
+			if err != nil {
+				return fmt.Errorf("Error adding inverse rate: %v", err)
+
+			}
+		} else {
+			return fmt.Errorf("Database Error: %v", err)
+		}
+	} else {
+		uceParams := database.UpdateCustomExchangeParams{ExchangeRate: inverse_rate, StartType: end_type, EndType: start_type}
+		err = app.Queries.UpdateCustomExchange(context.Background(), uceParams)
+		if err != nil {
+			return fmt.Errorf("Error updating inverse rate: %v", err)
+		}
+	}
+
+	return nil
 }
