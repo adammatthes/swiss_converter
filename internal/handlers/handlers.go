@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"database/sql"
 	"strconv"
-	"context"
 	"github.com/adammatthes/swiss_converter/internal/database"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 	"github.com/adammatthes/swiss_converter/internal/convert"
@@ -22,6 +21,7 @@ type Application struct {
 type UserRequest struct {
 	Value string `json:"name"`
 	Type string `json:"type"`
+	Category string `json:"category"`
 }
 
 type ConversionRequest struct {
@@ -29,6 +29,12 @@ type ConversionRequest struct {
 	StartType string `json:"start-type"`
 	EndType string `json:"end-type"`
 	Value	string `json:"value"`
+}
+
+type NewConversion struct {
+	StartType 	string `json:"start-type"`
+	EndType		string `json:"end-type"`
+	Value 		string `json:"value"`
 }
 
 func (app *Application) HelloHandler(w http.ResponseWriter, req *http.Request) {
@@ -61,7 +67,7 @@ func generateAddButton() string {
 }
 
 func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request) {
-	startingOptions := []string{conversion_options.Base, conversion_options.Distance, conversion_options.Currency}
+	startingOptions := []string{conversion_options.Base, conversion_options.Distance, conversion_options.Currency, conversion_options.Custom}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
@@ -96,7 +102,18 @@ func (app *Application) GenerateStartingOptions(w http.ResponseWriter, r *http.R
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
-	options, err := conversion_options.GetTypesByCategory(req.Type)
+	var options []string
+
+	if req.Type == "Custom" {
+		fmt.Println("Custom category detected")
+		options, err = app.Queries.GetStartingCustomOptions(r.Context())
+		fmt.Printf("%v", options)
+		if err != nil {
+			fmt.Println("Didn't find Custom Starting Options: %v", err)
+		}
+	} else {
+		options, err = conversion_options.GetTypesByCategory(req.Type)
+	}
 
 	response := map[string][]string{"options": options}
 
@@ -114,7 +131,16 @@ func (app *Application) GenerateTargetOptions(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	options, err := conversion_options.GetConversionOptions(req.Type)
+	var options []string
+	if (req.Category == "Custom") {
+		options, err = app.Queries.GetCustomConversionOptions(r.Context(), req.Type)
+		if err != nil {
+			http.Error(w, fmt.Sprint("Error getting Custom target conversion options: %v", err), http.StatusBadRequest)
+			return
+		}
+	} else {
+		options, err = conversion_options.GetConversionOptions(req.Type)
+	}
 
 	response := map[string][]string{"options": options}
 
@@ -137,16 +163,30 @@ func (app *Application) ProcessConversion(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	function, err := convert.GetConversionFunction(req.StartType, req.EndType)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-		return
-	}
+	var result string
 
-	result, err := function(req.Value)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-		return
+	if req.Category == "Custom" {
+		startVal, err := strconv.ParseFloat(req.Value, 64)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+			return
+		}
+
+		params := database.GetCustomExchangeRateParams{StartType: req.StartType, EndType: req.EndType}
+		exchangeRate, err := app.Queries.GetCustomExchangeRate(r.Context(), params)
+		result = fmt.Sprintf("%v", startVal * exchangeRate)
+	} else {
+		function, err := convert.GetConversionFunction(req.StartType, req.EndType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+			return
+		}
+
+		result, err = function(req.Value)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+			return
+		}
 	}
 
 
@@ -169,7 +209,7 @@ func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) 
 	start := req.StartType
 	end := req.EndType
 
-	exchangeRate, err := app.Queries.GetExchangeRate(context.Background(), start+end)
+	exchangeRate, err := app.Queries.GetExchangeRate(r.Context(), start+end)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
@@ -188,11 +228,53 @@ func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(response)
 }
 
-func (app *Application) GetCustomOptions() ([]string) {
-	//options, err := app.Queries.GetStartingCustomOptions(context.Background())
-	//if err != nil {
-		//return []string{"No Custom Options Found"}
-	//}
+func (app *Application) GetCustomOptions(w http.ResponseWriter, r *http.Request) ([]string) {
+	options, err := app.Queries.GetStartingCustomOptions(r.Context())
+	if err != nil {
+		fmt.Errorf("Error getting Starting Custom Options: %v", err)
+		return []string{"No Custom Options Found", fmt.Sprintf("%v", err)}
+	}
 
-	return []string{}
+	return options
+}
+
+func (app *Application) CreateConversion(w http.ResponseWriter, r *http.Request) {
+	var req NewConversion
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	start := req.StartType
+	end := req.EndType
+	rate, err := strconv.ParseFloat(req.Value, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+	}
+
+	gcerp := database.GetCustomExchangeRateParams{StartType: start, EndType: end}
+
+	checkIfExists, err := app.Queries.GetCustomExchangeRate(r.Context(), gcerp)
+	if err == nil || checkIfExists != 0.0 {
+		ucep := database.UpdateCustomExchangeParams{ExchangeRate: rate, StartType: start, EndType: end}
+		err = app.Queries.UpdateCustomExchange(r.Context(), ucep)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%v", err), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		accp := database.AddCustomConversionParams{StartType: start, EndType: end, ExchangeRate: rate}
+		err = app.Queries.AddCustomConversion(r.Context(), accp)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	response := map[string]bool{"success":true}
+	json.NewEncoder(w).Encode(response)
 }

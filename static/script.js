@@ -1,8 +1,8 @@
 'use strict';
 
-async function getConversionOptions(startingType) {
+async function getConversionOptions(startingType, category) {
 	const url = '/api/get-conversion-options';
-	const data = {value: 0, type: startingType};
+	const data = {value: 0, type: startingType, category: category};
 
 	const response = await fetch(url, {
 		method: 'POST',
@@ -94,6 +94,36 @@ async function getConversionResult() {
 	return result.result
 }
 
+async function createNewConversion() {
+	const startInput = document.getElementById("customStartInput");
+	const endInput = document.getElementById("customEndInput");
+	const exchangeInput = document.getElementById("customExchangeRateInput")
+
+	const data = {
+		"start-type": startInput.value,
+		"end-type": endInput.value,
+		"value": exchangeInput.value,
+	}
+	const url = "api/create-conversion"
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		const errorMessage = await response.text();
+		throw new Error(`createNewConversion failed: ${errorMessage}`);
+	}
+
+	const result = await response.json()
+
+	console.log(result)
+}
+
 function makeSelectElement(options, id) {
 	if (!options || options.length === 0) {
 		return
@@ -138,8 +168,9 @@ function modifySelectOptions(targetSelect, newOptions) {
 async function generateDestinationTypeSelect() {
 
 	const selectedValue = document.getElementById('startingTypeSelect').value;
+	const category = document.getElementById('categorySelect').value;
 
-	const options = await getConversionOptions(selectedValue);
+	const options = await getConversionOptions(selectedValue, category);
 
 	let destSelect = document.getElementById('destinationTypeSelect');
 	if (!destSelect) {
@@ -244,6 +275,7 @@ function generateCustomGenerationFields() {
 	const submitGeneration = document.createElement("button");
 	submitGeneration.id = 'customGenerationSubmitButton';
 	submitGeneration.textContent = 'Generate Conversion';
+	submitGeneration.addEventListener('click', async function() { await createNewConversion();});
 
 
 

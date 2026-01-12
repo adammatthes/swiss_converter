@@ -12,6 +12,7 @@ import (
 const addCustomConversion = `-- name: AddCustomConversion :exec
 INSERT INTO user_conversions(start_type, end_type, exchange_rate)
 	VALUES (?, ?, ?)
+RETURNING conversion_id, start_type, end_type, exchange_rate, last_updated
 `
 
 type AddCustomConversionParams struct {
