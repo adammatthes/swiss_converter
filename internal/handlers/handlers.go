@@ -306,5 +306,36 @@ func (app *Application) DeduceNewConversions(start_type, end_type string, rate f
 		}
 	}
 
+	onceRemoved, err := app.Queries.GetCustomConversionOptions(context.Background(), end_type)
+	if err != nil {
+		return fmt.Errorf("Error getting once-removed conversions: %v", err)
+	}
+
+	for _, opt := range onceRemoved {
+		tempParams := database.GetCustomExchangeRateParams{StartType: end_type, EndType: opt}
+		secondRate, err := app.Queries.GetCustomExchangeRate(context.Background(), tempParams)
+
+		checkParams := database.GetCustomExchangeRateParams{StartType: start_type, EndType: opt}
+		_, err = app.Queries.GetCustomExchangeRate(context.Background(), checkParams)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				accParams := database.AddCustomConversionParams{StartType: start_type, EndType: opt, ExchangeRate: rate * secondRate}
+				err = app.Queries.AddCustomConversion(context.Background(), accParams)
+				if err != nil {
+					return fmt.Errorf("Error adding once removed conversion: %v", err)
+				}
+			} else {
+				return fmt.Errorf("Database Error: %v", err)
+			}
+		} else {
+			uceParams := database.UpdateCustomExchangeParams{ExchangeRate: rate * secondRate, StartType: start_type, EndType: opt}
+			err = app.Queries.UpdateCustomExchange(context.Background(), uceParams)
+			if err != nil {
+				return fmt.Errorf("Error updating once removed conversion: %v", err)
+			}
+		}
+
+	}
+
 	return nil
 }
