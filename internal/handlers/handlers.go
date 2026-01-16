@@ -68,7 +68,12 @@ func generateAddButton() string {
 }
 
 func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request) {
-	startingOptions := []string{conversion_options.Base, conversion_options.Distance, conversion_options.Currency, conversion_options.Custom}
+	startingOptions := []string{conversion_options.Base,
+				conversion_options.Distance,
+				conversion_options.Currency,
+				conversion_options.Temperature,
+				conversion_options.Custom,
+			}
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 

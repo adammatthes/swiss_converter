@@ -7,6 +7,7 @@ import (
 const Base = "Number Base"
 const Distance = "Distance"
 const Currency = "Currency"
+const Temperature = "Temperature"
 const Custom = "Custom"
 
 const Hexadecimal = "Hexadecimal"
@@ -60,12 +61,22 @@ const EuroUS = Euro + USDollar
 const EuroCan = Euro + CanDollar
 const EuroPeso = Euro + Peso
 
+const Fahrenheit = "Fahrenheit"
+const Celsius = "Celsius"
+const Kelvin = "Kelvin"
+const FahCel = Fahrenheit + Celsius
+const FahKel = Fahrenheit + Kelvin
+const CelFah = Celsius + Fahrenheit
+const CelKel = Celsius + Kelvin
+const KelFah = Kelvin + Fahrenheit
+const KelCel = Kelvin + Celsius
 
 func GetTypesByCategory(category string) ([]string, error) {
 	categoryMap := map[string][]string{
 		Base: []string{Hexadecimal, Decimal, Binary, Roman},
 		Distance: []string{Miles, Kilometers, Meters, Yards},
 		Currency: []string{USDollar, CanDollar, Peso, Euro},
+		Temperature: []string{Fahrenheit, Celsius, Kelvin},
 	}
 
 	result, ok := categoryMap[category]
@@ -93,6 +104,10 @@ func GetConversionOptions(startingType string) ([]string, error) {
 		CanDollar: []string{USDollar, Peso, Euro},
 		Peso: []string{USDollar, CanDollar, Euro},
 		Euro: []string{USDollar, CanDollar, Peso},
+
+		Fahrenheit: []string{Celsius, Kelvin},
+		Celsius: []string{Fahrenheit, Kelvin},
+		Kelvin: []string{Fahrenheit, Celsius},
 	}
 
 	result, ok := conversionMap[startingType]

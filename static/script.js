@@ -63,6 +63,10 @@ async function getConversionResult() {
 	const input = document.getElementById('userInput');
 	const value = input.value;
 
+	if (value === '-') {
+		return '0';
+	}
+
 	const url = category === 'Currency' ? '/api/currency': '/api/convert';
 	const data = {
 		"category": category,

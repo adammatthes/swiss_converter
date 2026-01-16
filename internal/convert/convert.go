@@ -9,10 +9,6 @@ import (
 )
 
 func getFloat(input string) (float64, error) {
-	if input[0] == '-' {
-		input = input[1:]
-	}
-
 	f64, err := strconv.ParseFloat(input, 64)
 	if err != nil {
 		return 0.0, err
@@ -364,6 +360,66 @@ func MetersToYards(input string) (string, error) {
 	return result, nil
 }
 
+func FahrenheitToCelsius(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", (f64 - 32.0) * 0.5555555556)
+	return result, nil
+}
+
+func FahrenheitToKelvin(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", ((f64 - 32.0) * 0.5555555556) + 273.15)
+	return result, nil
+}
+
+func CelsiusToFahrenheit(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", (f64 * 1.8) + 32.0)
+	return result, nil
+}
+
+func CelsiusToKelvin(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", (f64 + 273.15))
+	return result, nil
+}
+
+func KelvinToFahrenheit(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", (f64 - 273.15) * 1.8 + 32)
+	return result, nil
+}
+
+func KelvinToCelsius(input string) (string, error) {
+	f64, err := getFloat(input)
+	if err != nil {
+		return "", err
+	}
+
+	result := fmt.Sprintf("%v", f64 - 273.15)
+	return result, nil
+}
+
 func GetConversionFunction(start, end string) (func(string) (string, error), error) {
 	functions := map[string]func(string) (string, error) {
 		conversion_options.HexDec: HexadecimalToDecimal,
@@ -390,6 +446,12 @@ func GetConversionFunction(start, end string) (func(string) (string, error), err
 		conversion_options.RomDec: RomanToDecimal,
 		conversion_options.RomHex: RomanToHexadecimal,
 		conversion_options.RomBin: RomanToBinary,
+		conversion_options.FahCel: FahrenheitToCelsius,
+		conversion_options.FahKel: FahrenheitToKelvin,
+		conversion_options.CelFah: CelsiusToFahrenheit,
+		conversion_options.CelKel: CelsiusToKelvin,
+		conversion_options.KelFah: KelvinToFahrenheit,
+		conversion_options.KelCel: KelvinToCelsius,
 	}
 
 	result, ok := functions[start+end]
