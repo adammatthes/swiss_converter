@@ -196,6 +196,11 @@ func (app *Application) ProcessConversion(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+
+	go func(st, et, val string) {
+		queryLogParams := database.AddQueryLogEntryParams{StartType: st, EndType: et, Amount: val}
+		_ = app.Queries.AddQueryLogEntry(context.Background(), queryLogParams)
+	}(req.StartType, req.EndType, req.Value)
 }
 
 func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) {
@@ -227,6 +232,11 @@ func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+
+	go func(st, et, val string) {
+		queryLogParams := database.AddQueryLogEntryParams{StartType: st, EndType: et, Amount: val}
+		_ = app.Queries.AddQueryLogEntry(context.Background(), queryLogParams)
+	}(req.StartType, req.EndType, req.Value)
 }
 
 func (app *Application) GetCustomOptions(w http.ResponseWriter, r *http.Request) ([]string) {

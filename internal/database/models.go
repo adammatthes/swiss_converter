@@ -14,6 +14,14 @@ type CurrencyExchange struct {
 	LastUpdated         sql.NullTime
 }
 
+type QueryLog struct {
+	ID        int64
+	StartType string
+	EndType   string
+	Amount    string
+	Dtg       sql.NullTime
+}
+
 type UserConversion struct {
 	ConversionID int64
 	StartType    string
