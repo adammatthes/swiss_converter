@@ -252,7 +252,7 @@ async function generateDestinationTypeSelect() {
 	}
 
 	destSelect.addEventListener('change', async function() {
-		let input = createInputField();
+		let input = createInputField('userInput');
 		if (input) {
 			const menu = document.getElementById('conversionMenu');
 			menu.appendChild(input);
@@ -294,14 +294,14 @@ async function submitInput() {
 }
 
 
-function createInputField() {
-	let input = document.getElementById('userInput');
+function createInputField(id) {
+	let input = document.getElementById(id);
 	if (input) {
 		return;
 	}
 
 	input = document.createElement('input');
-	input.id = 'userInput';
+	input.id = id;
 	input.type = 'text';
 	input.className = 'inputField';
 
@@ -334,21 +334,14 @@ function generateCustomGenerationFields() {
 
 	const customFields = document.getElementById("customRateFields");
 	
-	const firstInput = document.createElement("input");
-	firstInput.type = 'text';
-	firstInput.id = 'customStartInput';
-	const secondInput = document.createElement("input");
-	secondInput.type = 'text';
-	secondInput.id = 'customEndInput';
-	const thirdInput = document.createElement("input");
-	thirdInput.type = 'text';
-	thirdInput.id = 'customExchangeRateInput';
+	const firstInput = createInputField("customStartInput");
+	const secondInput = createInputField("customEndInput");
+	const thirdInput = createInputField("customExchangeRateInput");
+
 	const submitGeneration = document.createElement("button");
 	submitGeneration.id = 'customGenerationSubmitButton';
 	submitGeneration.textContent = 'Generate Conversion';
 	submitGeneration.addEventListener('click', async function() { await createNewConversion();});
-
-
 
 	customFields.appendChild(firstInput);
 	customFields.appendChild(secondInput);
