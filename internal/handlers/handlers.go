@@ -65,8 +65,8 @@ func generateDropdownOptions(options []string) string {
 	return strings.Join(result, "\n")
 }
 
-func generateAddButton() string {
-	return `<button id="customRateInitiator">Add a New Conversion</button><div id="customRateFields"></div>`
+func generateButton(buttonId, innerFieldsId, buttonText string) string {
+	return fmt.Sprintf(`<button id="%s">%s</button><div id="%s"></div>`, buttonId, buttonText, innerFieldsId)
 }
 
 func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request) {
@@ -79,9 +79,10 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 
 	htmlOptions := generateDropdownOptions(startingOptions)
 
-	firstDropdown := fmt.Sprintf(`<select id="categorySelect" class=\"dropdownMenu\">%s</select>`, htmlOptions)
+	firstDropdown := fmt.Sprintf(`<select id="categorySelect" class="dropdownMenu">%s</select>`, htmlOptions)
 
-	button := generateAddButton()
+	conversionGenerateButton := generateButton("customRateInitiator", "customRateFields", "Add a New Conversion")
+	metricsButton := generateButton("metricsCreateButton", "metricsTable", "Conversion Metrics")
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -95,11 +96,13 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 	</head>
 	<body>
 	<div id="conversionMenu">%s</div>
+	<div id="resultOutputSection"></div>
 	<div id="customGenerationSection">%s</div>
+	<div id="metricsSection">%s</div>
 	<script src="./static/script.js"></script>
 	</body>
 	</html>
-	`, firstDropdown, button))
+	`, firstDropdown, conversionGenerateButton, metricsButton))
 }
 
 func (app *Application) GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {

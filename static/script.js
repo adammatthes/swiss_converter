@@ -128,6 +128,73 @@ async function createNewConversion() {
 	console.log(result)
 }
 
+async function getMetricsData() {
+	const url = "api/metrics";
+
+	const response = await fetch(url);
+	if (!response.ok) {
+		const errorMessage = await response.text();
+		throw new Error(`getMetricsData failed: ${errorMessage}`);
+	}
+
+	const result = await response.json();
+
+	return result;
+}
+
+async function makeMetricsTable() {
+	const data = await getMetricsData();
+	if (!data) {
+		return;
+	}
+
+	const colNames = ["Start Type", "End Type", "Total Number of Conversions"];
+
+	let metricsTable = document.getElementById('metricsTable');
+	if (metricsTable) {
+		metricsTable.replaceChildren();
+	} else {
+		metricsTable = document.createElement('table');
+		metricsTable.id = 'metricsTable';
+	}
+
+	const metricsTableHead = document.createElement('thead');
+
+	for (const col of colNames) {
+		const nextCol = document.createElement("th");
+		nextCol.value = col;
+		nextCol.innerHTML = col;
+		nextCol.className = 'columnHeader';
+		metricsTableHead.appendChild(nextCol);
+	}
+
+	metricsTable.appendChild(metricsTableHead);
+
+	const tBody = document.createElement('tbody');
+
+	for (const row of data) {
+		const nextRow = document.createElement('tr');
+		const nextStartType = document.createElement('td');
+		nextStartType.innerHTML = row.StartType;
+		nextRow.appendChild(nextStartType);
+
+		const nextEndType = document.createElement('td');
+		nextEndType.innerHTML = row.EndType;
+		nextRow.appendChild(nextEndType);
+
+		const nextCount = document.createElement('td');
+		nextCount.innerHTML = row.Count;
+		nextRow.appendChild(nextCount)
+
+		tBody.appendChild(nextRow)
+	}
+
+	metricsTable.appendChild(tBody);
+
+	const metricsSection = document.getElementById('metricsSection');
+	metricsSection.appendChild(metricsTable);
+}
+
 function makeSelectElement(options, id) {
 	if (!options || options.length === 0) {
 		return
@@ -219,8 +286,8 @@ async function submitInput() {
 		display = document.createElement('p');
 		display.id = 'resultOutput';
 
-		const menu = document.getElementById('conversionMenu');
-		menu.appendChild(display);
+		const outputSection = document.getElementById('resultOutputSection');
+		outputSection.appendChild(display);
 	}
 	display.innerHTML = '';
 	display.innerHTML = result;
@@ -294,3 +361,6 @@ firstDropDown.addEventListener('change', async function() { generateStartingType
 
 const addButton = document.getElementById('customRateInitiator');
 addButton.addEventListener('click', function() { generateCustomGenerationFields();});
+
+const metricsButton = document.getElementById('metricsCreateButton');
+metricsButton.addEventListener('click', async function() { makeMetricsTable();});
