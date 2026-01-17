@@ -9,6 +9,8 @@ import (
 	"database/sql"
 	"strconv"
 	"context"
+	"sort"
+	"slices"
 	"github.com/adammatthes/swiss_converter/internal/database"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 	"github.com/adammatthes/swiss_converter/internal/convert"
@@ -353,4 +355,43 @@ func (app *Application) DeduceNewConversions(start_type, end_type string, rate f
 	}
 
 	return nil
+}
+
+func (app *Application) GetMetrics(w http.ResponseWriter, r *http.Request) {
+	type countObject struct {
+		StartType	string `json:start_type`
+		EndType		string `json:end_type`
+		Count		uint64 `json:count`
+	}
+
+	bakedTypes := conversion_options.GetAllTypes()
+
+	customTypes, _ := app.Queries.GetStartingCustomOptions(r.Context())
+
+	combined := append(bakedTypes, customTypes...)
+	sort.Strings(combined)
+
+	allTypes := slices.Compact(combined)
+
+	var result []countObject
+
+	for _, t1 := range allTypes {
+		for _, t2 := range allTypes {
+			if t1 == t2 {
+				continue
+			}
+
+			gccParams := database.GetConversionCountParams{StartType: t1, EndType: t2}
+			count, err := app.Queries.GetConversionCount(r.Context(), gccParams)
+			if err != nil || count == 0 {
+				continue
+			}
+
+			result = append(result, countObject{StartType: t1, EndType: t2, Count: uint64(count)})
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
 }

@@ -71,6 +71,10 @@ const CelKel = Celsius + Kelvin
 const KelFah = Kelvin + Fahrenheit
 const KelCel = Kelvin + Celsius
 
+func GetAllTypes() []string {
+	return []string{Hexadecimal, Decimal, Binary, Roman, Miles, Kilometers, Meters, Yards, USDollar, CanDollar, Peso, Euro, Fahrenheit, Celsius, Kelvin}
+}
+
 func GetTypesByCategory(category string) ([]string, error) {
 	categoryMap := map[string][]string{
 		Base: []string{Hexadecimal, Decimal, Binary, Roman},
