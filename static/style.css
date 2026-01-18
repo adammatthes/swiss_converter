@@ -30,3 +30,39 @@
 body {
 	background: #fdfcfb;
 }
+
+.tableHead {
+	font-size: 16px;
+	font-weight: 500;
+	font-family: sans-serif;
+	border-radius: 8px;
+	box-shadow: 1px 1px black;
+	background: linear-gradient(#e66465, #9198e5);
+}
+
+#metricsTable {
+	margin-top: 16px;
+}
+
+tr {
+	border-radius: 8px;
+}
+
+tr:hover {
+	font-weight: 500px;
+	box-shadow: 1px 1px black;
+	background: linear-gradient(#fdbbbb, #cda000);
+}
+
+td, th {
+	padding: 8px;
+}
+
+td:hover {
+	font-weight: 500px;
+}
+
+th {
+	border: 1px solid black;
+	border-radius: 8px;
+}

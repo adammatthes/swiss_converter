@@ -159,6 +159,7 @@ async function makeMetricsTable() {
 	}
 
 	const metricsTableHead = document.createElement('thead');
+	metricsTableHead.className = "tableHead";
 
 	for (const col of colNames) {
 		const nextCol = document.createElement("th");
@@ -167,6 +168,10 @@ async function makeMetricsTable() {
 		nextCol.className = 'columnHeader';
 		metricsTableHead.appendChild(nextCol);
 	}
+
+	metricsTable.style.border = "1px solid black";
+	metricsTable.style.borderRadius = "8px";
+	metricsTable.style.boxShadow = "1px 1px black";
 
 	metricsTable.appendChild(metricsTableHead);
 
