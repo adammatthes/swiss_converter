@@ -337,21 +337,52 @@ function generateCustomGenerationFields() {
 		return;
 	}
 
+	const startLabel = document.createElement('label');
+	startLabel.textContent = 'Start Type      ';
+	startLabel.className = 'customCreateLabel';
+	startLabel.htmlFor = 'customStartInput';
+
+	const endLabel = document.createElement('label');
+	endLabel.textContent = 'Destination Type';
+	endLabel.className = 'customCreateLabel';
+	endLabel.htmlFor = 'customEndInput';
+
+	const rateLabel = document.createElement('label');
+	rateLabel.textContent = 'Conversion Rate ';
+	rateLabel.className = 'customCreateLabel';
+	rateLabel.htmlFor = 'customExchangeRateInput';
+
 	const customFields = document.getElementById("customRateFields");
-	
+
+	const startDiv = document.createElement('div');
+	startDiv.className = 'customField';
+	startDiv.appendChild(startLabel);
 	const firstInput = createInputField("customStartInput");
+	startDiv.appendChild(firstInput);
+
+	const endDiv = document.createElement('div');
+	endDiv.className = 'customField';
+	endDiv.appendChild(endLabel);
 	const secondInput = createInputField("customEndInput");
+	endDiv.appendChild(secondInput);
+
+	const rateDiv = document.createElement('div');
+	rateDiv.className = 'customField';
+	rateDiv.appendChild(rateLabel);
 	const thirdInput = createInputField("customExchangeRateInput");
+	rateDiv.appendChild(thirdInput);
 
 	const submitGeneration = document.createElement("button");
 	submitGeneration.id = 'customGenerationSubmitButton';
 	submitGeneration.textContent = 'Generate Conversion';
 	submitGeneration.addEventListener('click', async function() { await createNewConversion();});
 
-	customFields.appendChild(firstInput);
-	customFields.appendChild(secondInput);
-	customFields.appendChild(thirdInput);
-	customFields.appendChild(submitGeneration);
+	customFields.appendChild(startDiv);
+	customFields.appendChild(endDiv);
+	customFields.appendChild(rateDiv);
+
+	const customSection = document.getElementById('customGenerationSection');
+	customSection.appendChild(submitGeneration);
 }
 
 const firstDropDown = document.getElementById('categorySelect');
