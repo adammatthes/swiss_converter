@@ -128,6 +128,8 @@ async function createNewConversion() {
 	const createSection = document.getElementById("customGenerationSection");
 
 	createFadingParagraph(result.message, "#50C878", createSection);
+
+	setTimeout(() => {document.location.reload(true)}, 5000);
 }
 
 async function deleteCustomConversion() {
@@ -159,6 +161,8 @@ async function deleteCustomConversion() {
 	const deleteSection = document.getElementById('deleteConversionSection');
 
 	createFadingParagraph(result.message, '#50C878', deleteSection);
+
+	setTimeout(() => {document.location.reload(true)}, 5000);
 }
 
 function createFadingParagraph(text, color, attachTo) {
