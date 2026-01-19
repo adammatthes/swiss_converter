@@ -1,17 +1,17 @@
 -- +goose Up
 INSERT INTO currency_exchange (conversion_direction, exchange_rate, last_updated)
-VALUES ("US DollarCanadian Dollar", 1.2, DATETIME()),
-	("US DollarEuro", 0.7, DATETIME()),
-	("US DollarPeso", 34.2, DATETIME()),
-	("Canadian DollarUS Dollar", 0.8, DATETIME()),
-	("Canadian DollarEuro", 0.64, DATETIME()),
-	("Canadian DollarPeso", 23.6, DATETIME()),
-	("Euro US Dollar", 1.4, DATETIME()),
-	("EuroCanadian Dollar", 1.63, DATETIME()),
-	("EuroPeso", 76.1, DATETIME()),
-	("PesoUS Dollar", 0.38, DATETIME()),
-	("PesoCanadian Dollar", 0.51, DATETIME()),
-	("PesoEuro", 0.23, DATETIME());
+VALUES ("US DollarCanadian Dollar", 1.39, DATETIME()),
+	("US DollarEuro", 0.86, DATETIME()),
+	("US DollarPeso", 17.58, DATETIME()),
+	("Canadian DollarUS Dollar", 0.72, DATETIME()),
+	("Canadian DollarEuro", 0.62, DATETIME()),
+	("Canadian DollarPeso", 12.68, DATETIME()),
+	("EuroUS Dollar", 1.16, DATETIME()),
+	("EuroCanadian Dollar", 1.61, DATETIME()),
+	("EuroPeso", 20.47, DATETIME()),
+	("PesoUS Dollar", 0.057, DATETIME()),
+	("PesoCanadian Dollar", 0.079, DATETIME()),
+	("PesoEuro", 0.049, DATETIME());
 
 -- +goose Down
 DELETE FROM currency_exchange;	

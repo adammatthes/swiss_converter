@@ -8,4 +8,4 @@ CREATE TABLE user_conversions (
 );
 
 -- +goose Down
-DROP TABLE user_conversion;
+DROP TABLE user_conversions;
