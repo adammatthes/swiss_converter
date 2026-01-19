@@ -4,7 +4,7 @@
 	align-items: center;
 }
 
-#customGenerationSection, #metricsSection, #resultOutputSection {
+#customGenerationSection, #metricsSection, #resultOutputSection, #deleteConversionSection {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -12,7 +12,7 @@
 	margin-top: 44px;
 }
 
-#customGenerationSubmitButton, #metricsCreateButton, #customRateInitiator {
+#customGenerationSubmitButton, #metricsCreateButton, #customRateInitiator, #deleteConversionButton, #submitDeleteButton {
 	min-height: 24px;
 	min-width: 24px;
 	border-radius: 8px;
@@ -71,6 +71,11 @@ body {
 	border-radius: 8px;
 	box-shadow: 1px 1px black;
 	background: linear-gradient(#e66465, #9198e5);
+}
+
+.fade-out {
+	opacity: 0;
+	transition: opacity 1s ease;
 }
 
 #metricsTable {

@@ -54,6 +54,7 @@ func main() {
 	mux.HandleFunc("/api/convert", app.ProcessConversion)
 	mux.HandleFunc("/api/currency", app.ProcessCurrency)
 	mux.HandleFunc("/api/create-conversion", app.CreateConversion)
+	mux.HandleFunc("/api/delete-conversion", app.DeleteConversion)
 	mux.HandleFunc("/api/metrics", app.GetMetrics)
 
 	log.Println("Server starting on http://localhost:8080")

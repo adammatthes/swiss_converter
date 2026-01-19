@@ -125,7 +125,57 @@ async function createNewConversion() {
 
 	const result = await response.json()
 
-	console.log(result)
+	const createSection = document.getElementById("customGenerationSection");
+
+	createFadingParagraph(result.message, "#50C878", createSection);
+}
+
+async function deleteCustomConversion() {
+	const startInput = document.getElementById("deleteStartInput");
+	const endInput = document.getElementById("deleteEndInput");
+
+	const data = {
+		'start-type': startInput.value,
+		'end-type': endInput.value,
+		'value': null,
+	}
+	const url = "api/delete-conversion"
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		const errorMessage = await response.text();
+		throw new Error(`deleteCustomConversion failed: ${errorMessage}`);
+	}
+
+	const result = await response.json()
+
+	const deleteSection = document.getElementById('deleteConversionSection');
+
+	createFadingParagraph(result.message, '#50C878', deleteSection);
+}
+
+function createFadingParagraph(text, color, attachTo) {
+	const p = document.createElement('p');
+	p.textContent = text;
+	p.style.background = color;
+
+	attachTo.appendChild(p);
+
+	setTimeout(() => {
+		p.classList.add('fade-out');
+	}, 2000);
+
+	setTimeout(() => {
+		p.remove();
+	}, 3000);
+
 }
 
 async function getMetricsData() {
@@ -332,6 +382,47 @@ async function generateStartingTypeSelect() {
 	menu.appendChild(startSelect);
 }
 
+function makeInputDiv(label, htmlFor) {
+	const inputDiv = document.createElement('div');
+	inputDiv.className = 'customField';
+
+	const lbl = document.createElement('label');
+	lbl.textContent = label;
+	lbl.className = 'customCreateLabel';
+	lbl.htmlFor = htmlFor;
+
+	const textInput = document.createElement('input');
+	textInput.type = 'text';
+	textInput.id = htmlFor;
+	textInput.className = 'inputField';
+
+	inputDiv.appendChild(lbl);
+	inputDiv.appendChild(textInput);
+
+	return inputDiv;
+}
+
+
+function generateDeleteFields() {
+	const deleteFields = document.getElementById('deleteCustomFields')
+
+	const deleteStart = makeInputDiv('Delete Start Type', 'deleteStartInput');
+	const deleteEnd = makeInputDiv('Delete End Type', 'deleteEndInput');
+
+	deleteFields.appendChild(deleteStart);
+	deleteFields.appendChild(deleteEnd);
+
+	const submitDeleteButton = document.createElement('button');
+	submitDeleteButton.id = 'submitDeleteButton';
+	submitDeleteButton.textContent = 'Delete Conversion';
+	submitDeleteButton.addEventListener('click', async function() { await deleteCustomConversion();});
+
+	const deleteSection = document.getElementById('deleteConversionSection');
+
+	deleteSection.appendChild(deleteFields);
+	deleteSection.appendChild(submitDeleteButton);
+}
+
 function generateCustomGenerationFields() {
 	if (document.getElementById('customGenerationSubmitButton')) {
 		return;
@@ -390,6 +481,9 @@ firstDropDown.addEventListener('change', async function() { generateStartingType
 
 const addButton = document.getElementById('customRateInitiator');
 addButton.addEventListener('click', function() { generateCustomGenerationFields();});
+
+const deleteButton = document.getElementById('deleteConversionButton');
+deleteButton.addEventListener('click', function() { generateDeleteFields();});
 
 const metricsButton = document.getElementById('metricsCreateButton');
 metricsButton.addEventListener('click', async function() { makeMetricsTable();});

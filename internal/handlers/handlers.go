@@ -82,6 +82,7 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 	firstDropdown := fmt.Sprintf(`<select id="categorySelect" class="dropdownMenu">%s</select>`, htmlOptions)
 
 	conversionGenerateButton := generateButton("customRateInitiator", "customRateFields", "Add a New Conversion")
+	deleteButton := generateButton("deleteConversionButton", "deleteCustomFields", "Delete a Conversion")
 	metricsButton := generateButton("metricsCreateButton", "metricsTable", "Conversion Metrics")
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -98,11 +99,12 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 	<div id="conversionMenu">%s</div>
 	<div id="resultOutputSection"></div>
 	<div id="customGenerationSection">%s</div>
+	<div id="deleteConversionSection">%s</div>
 	<div id="metricsSection">%s</div>
 	<script src="./static/script.js"></script>
 	</body>
 	</html>
-	`, firstDropdown, conversionGenerateButton, metricsButton))
+	`, firstDropdown, conversionGenerateButton, deleteButton, metricsButton))
 }
 
 func (app *Application) GenerateStartingOptions(w http.ResponseWriter, r *http.Request) {
@@ -298,7 +300,7 @@ func (app *Application) CreateConversion(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	response := map[string]any{"success":true, "error": err}
+	response := map[string]any{"message": fmt.Sprintf("%s to %s conversion successfully created!", start, end),"success":true, "error": err}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -358,6 +360,28 @@ func (app *Application) DeduceNewConversions(start_type, end_type string, rate f
 	}
 
 	return nil
+}
+
+func (app *Application) DeleteConversion(w http.ResponseWriter, r *http.Request) {
+	var req NewConversion
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error Decoding delete request: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	dccParams := database.DeleteCustomConversionParams{StartType: req.StartType, EndType: req.EndType}
+	err = app.Queries.DeleteCustomConversion(r.Context(), dccParams)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error delete custom conversion: %v", err), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	response := map[string]string{"message": fmt.Sprintf("%s to %s conversions successfully deleted!", req.StartType, req.EndType)}
+	json.NewEncoder(w).Encode(response)
 }
 
 func (app *Application) GetMetrics(w http.ResponseWriter, r *http.Request) {
