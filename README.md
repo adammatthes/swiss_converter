@@ -32,7 +32,7 @@ Or just run it from the root of the repository:
 go run .
 ```
 
-When the server runs, it will also run the migration scripts to build the tables. You also have two scripts, `up\_and\_generate.sh` and `tear\_down.sh` to execute the goose migrations as well.
+When the server runs, it will also run the migration scripts to build the tables. You also have two scripts, `up_and_generate.sh` and `tear_down.sh` to execute the goose migrations as well.
 
 ### Baked-In Conversions
 
