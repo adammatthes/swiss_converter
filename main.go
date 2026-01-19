@@ -57,7 +57,7 @@ func main() {
 	mux.HandleFunc("/api/delete-conversion", app.DeleteConversion)
 	mux.HandleFunc("/api/metrics", app.GetMetrics)
 
-	log.Println("Server starting on http://localhost:8080")
+	log.Println("\nServer starting on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)
 
 	db.Close()
