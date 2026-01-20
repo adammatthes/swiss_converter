@@ -103,6 +103,10 @@ async function createNewConversion() {
 	const endInput = document.getElementById("customEndInput");
 	const exchangeInput = document.getElementById("customExchangeRateInput")
 
+	if (startInput.value === '' || endInput.value === '' || exchangeInput.value === '') {
+		return;
+	}
+
 	const data = {
 		"start-type": startInput.value,
 		"end-type": endInput.value,
@@ -135,6 +139,10 @@ async function createNewConversion() {
 async function deleteCustomConversion() {
 	const startInput = document.getElementById("deleteStartInput");
 	const endInput = document.getElementById("deleteEndInput");
+
+	if (startInput.value === '' || endInput.value === '') {
+		return;
+	}
 
 	const data = {
 		'start-type': startInput.value,
