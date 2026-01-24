@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"regexp"
 	"io"
+	"strconv"
+	"strings"
 )
 
-func FindExchangeRates() (map[string]string, error) {
+func FindExchangeRates() (map[string]float64, error) {
 	urls := []string{
 		"usd-cad",
 	}
 
-	rates := make(map[string]string)
+	rates := make(map[string]float64)
 
 	for _, url := range urls {
 		fullURL := fmt.Sprintf("https://www.exchange-rates.org/converter/%s", url)
@@ -29,8 +31,14 @@ func FindExchangeRates() (map[string]string, error) {
 		}
 
 		pattern := regexp.MustCompile(`<span class="rate-to">(.*?)</span>`)
-		match := pattern.FindStringSubmatch(string(body))[0]
-		rates[url] = match
+		match := pattern.FindStringSubmatch(string(body))[1]
+		number := strings.Split(match, " ")[0]
+
+		newRate, err := strconv.ParseFloat(number, 64)
+		if err != nil {
+			return nil, err
+		}
+		rates[url] = newRate
 	}
 
 	return rates, nil

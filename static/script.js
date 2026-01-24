@@ -178,6 +178,7 @@ async function updateCurrencyRates() {
 
 	const response = await fetch(url);
 	if (!response.ok) {
+		console.log(response)
 		throw new Error(`updateCurrencyRates Failed: ${response.status}`)
 	}
 
