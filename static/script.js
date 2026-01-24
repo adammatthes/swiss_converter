@@ -394,6 +394,8 @@ function createInputField(id) {
 async function generateStartingTypeSelect() {
 	const selectedValue = document.getElementById('categorySelect').value;
 	const options = await getStartingTypes(selectedValue);
+	const menu = document.getElementById('conversionMenu');
+
 
 	let startSelect = document.getElementById('startingTypeSelect');
 	if (!startSelect) {
@@ -402,24 +404,29 @@ async function generateStartingTypeSelect() {
 	} else {
 		modifySelectOptions(startSelect, options);
 		await generateDestinationTypeSelect();
+		addOrRemoveUpdateCurrencyButton(selectedValue, menu);
 		return;
 	}
 
-	const menu = document.getElementById('conversionMenu');
 	menu.appendChild(startSelect);
+	addOrRemoveUpdateCurrencyButton(selectedValue, menu);
 
+}
+
+function addOrRemoveUpdateCurrencyButton(selectedValue, div) {
 	if (selectedValue === 'Currency') {
 		const updateButton = document.createElement('button');
 		updateButton.id = 'currencyUpdateButton';
 		updateButton.textContent = 'Update Currencies';
 		updateButton.addEventListener('click', async function() { await updateCurrencyRates();});
-		menu.appendChild(updateButton);
+		div.appendChild(updateButton);
 	} else {
 		const updateButton = document.getElementById('currencyUpdateButton');
 		if (updateButton) {
 			updateButton.remove();
 		}
 	}
+
 }
 
 function makeInputDiv(label, htmlFor) {

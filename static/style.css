@@ -12,7 +12,7 @@
 	margin-top: 44px;
 }
 
-#customGenerationSubmitButton, #metricsCreateButton, #customRateInitiator, #deleteConversionButton, #submitDeleteButton {
+#customGenerationSubmitButton, #metricsCreateButton, #customRateInitiator, #deleteConversionButton, #submitDeleteButton, #currencyUpdateButton {
 	min-height: 24px;
 	min-width: 24px;
 	border-radius: 8px;
