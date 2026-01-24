@@ -173,6 +173,21 @@ async function deleteCustomConversion() {
 	setTimeout(() => {document.location.reload(true)}, 5000);
 }
 
+async function updateCurrencyRates() {
+	const url = "api/update-currencies";
+
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(`updateCurrencyRates Failed: ${response.status}`)
+	}
+
+	const result = await response.json()
+
+	const menu = document.getElementById('conversionMenu')
+
+	createFadingParagraph(JSON.stringify(result), '#50C878', menu)
+}
+
 function createFadingParagraph(text, color, attachTo) {
 	const p = document.createElement('p');
 	p.textContent = text;
@@ -383,7 +398,7 @@ async function generateStartingTypeSelect() {
 	let startSelect = document.getElementById('startingTypeSelect');
 	if (!startSelect) {
 		startSelect = makeSelectElement(options, 'startingTypeSelect');
-		startSelect.addEventListener('change', async function() { generateDestinationTypeSelect();});
+		startSelect.addEventListener('change', async function() { await generateDestinationTypeSelect();});
 	} else {
 		modifySelectOptions(startSelect, options);
 		await generateDestinationTypeSelect();
@@ -392,6 +407,19 @@ async function generateStartingTypeSelect() {
 
 	const menu = document.getElementById('conversionMenu');
 	menu.appendChild(startSelect);
+
+	if (selectedValue === 'Currency') {
+		const updateButton = document.createElement('button');
+		updateButton.id = 'currencyUpdateButton';
+		updateButton.textContent = 'Update Currencies';
+		updateButton.addEventListener('click', async function() { await updateCurrencyRates();});
+		menu.appendChild(updateButton);
+	} else {
+		const updateButton = document.getElementById('currencyUpdateButton');
+		if (updateButton) {
+			updateButton.remove();
+		}
+	}
 }
 
 function makeInputDiv(label, htmlFor) {

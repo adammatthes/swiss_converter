@@ -14,6 +14,7 @@ import (
 	"github.com/adammatthes/swiss_converter/internal/database"
 	"github.com/adammatthes/swiss_converter/internal/conversion_options"
 	"github.com/adammatthes/swiss_converter/internal/convert"
+	"github.com/adammatthes/swiss_converter/internal/requester"
 )
 
 type Application struct {
@@ -421,4 +422,16 @@ func (app *Application) GetMetrics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)
+}
+
+func (app *Application) UpdateCurrencies(w http.ResponseWriter, r *http.Request) {
+	newRates, err := requester.FindExchangeRates()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Problem getting new currency rates: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newRates)
 }
