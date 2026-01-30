@@ -97,6 +97,7 @@ func (app *Application) ConversionMenu(w http.ResponseWriter, req *http.Request)
 		<link rel="stylesheet" href="/static/style.css">
 	</head>
 	<body>
+	<div id="updateCurrencySection"></div>
 	<div id="conversionMenu">%s</div>
 	<div id="resultOutputSection"></div>
 	<div id="customGenerationSection">%s</div>
@@ -228,7 +229,7 @@ func (app *Application) ProcessCurrency(w http.ResponseWriter, r *http.Request) 
 	start := req.StartType
 	end := req.EndType
 
-	exchangeRate, err := app.Queries.GetExchangeRate(r.Context(), start+end)
+	exchangeRate, err := app.Queries.GetExchangeRate(r.Context(), start + "-" + end)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
@@ -431,7 +432,18 @@ func (app *Application) UpdateCurrencies(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	for conversion, rate := range newRates {
+		params := database.SetCurrencyRateParams{ConversionDirection: conversion, ExchangeRate: rate}
+		err = app.Queries.SetCurrencyRate(r.Context(), params)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error updating currency: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	response := map[string]string{"message": "Currencies Successfully Updated!"}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(newRates)
+	json.NewEncoder(w).Encode(response)
 }

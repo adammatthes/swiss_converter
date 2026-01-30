@@ -41,14 +41,20 @@
 	font-family: sans-serif;
 }
 
+#updateCurrencySection {
+	min-height: 24px;
+}
+
 .dropdownMenu {
 	justify-content: center;
 	border-radius: 8px;
 	font-family: sans-serif;
+	margin-left: 8px;
 }
 
 .inputField {
 	border-radius: 8px;
+	margin-left: 8px;
 }
 
 .customField {

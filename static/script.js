@@ -184,9 +184,9 @@ async function updateCurrencyRates() {
 
 	const result = await response.json()
 
-	const menu = document.getElementById('conversionMenu')
+	const updateSection = document.getElementById('updateCurrencySection')
 
-	createFadingParagraph(JSON.stringify(result), '#50C878', menu)
+	createFadingParagraph(JSON.stringify(result.message), '#50C878', updateSection)
 }
 
 function createFadingParagraph(text, color, attachTo) {
@@ -198,11 +198,11 @@ function createFadingParagraph(text, color, attachTo) {
 
 	setTimeout(() => {
 		p.classList.add('fade-out');
-	}, 2000);
+	}, 3000);
 
 	setTimeout(() => {
 		p.remove();
-	}, 3000);
+	}, 5000);
 
 }
 
@@ -393,9 +393,12 @@ function createInputField(id) {
 }
 
 async function generateStartingTypeSelect() {
-	const selectedValue = document.getElementById('categorySelect').value;
+
+	const catSelect = document.getElementById('categorySelect');
+	const selectedValue = catSelect.value;
 	const options = await getStartingTypes(selectedValue);
 	const menu = document.getElementById('conversionMenu');
+	const updateSection = document.getElementById("updateCurrencySection")
 
 
 	let startSelect = document.getElementById('startingTypeSelect');
@@ -405,22 +408,23 @@ async function generateStartingTypeSelect() {
 	} else {
 		modifySelectOptions(startSelect, options);
 		await generateDestinationTypeSelect();
-		addOrRemoveUpdateCurrencyButton(selectedValue, menu);
+		addOrRemoveUpdateCurrencyButton(selectedValue, updateSection);
 		return;
 	}
 
 	menu.appendChild(startSelect);
-	addOrRemoveUpdateCurrencyButton(selectedValue, menu);
+
+		addOrRemoveUpdateCurrencyButton(selectedValue, updateSection);
 
 }
 
-function addOrRemoveUpdateCurrencyButton(selectedValue, div) {
+function addOrRemoveUpdateCurrencyButton(selectedValue, el) {
 	if (selectedValue === 'Currency') {
 		const updateButton = document.createElement('button');
 		updateButton.id = 'currencyUpdateButton';
 		updateButton.textContent = 'Update Currencies';
 		updateButton.addEventListener('click', async function() { await updateCurrencyRates();});
-		div.appendChild(updateButton);
+		el.appendChild(updateButton);
 	} else {
 		const updateButton = document.getElementById('currencyUpdateButton');
 		if (updateButton) {
