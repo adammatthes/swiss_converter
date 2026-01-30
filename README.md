@@ -53,6 +53,10 @@ Click `Add a New Conversion` to generate the menu for conversion creation. Enter
 
 Click `Delete a Conversion` to generate the menu for removing a custom conversion. It will remove the conversion in both directions.
 
+### Update Currency Conversion Rates
+
+While `Currency` is selected as the category, a button `Update Currencies` will appear. Clicking it will send GET requests to [exchange rates](https://www.exchange-rates.org). A paragraph will appear indicating success.
+
 ### Metrics
 
 Click `Conversion Metrics` to generate a table that shows counts of conversions performed.
@@ -60,8 +64,6 @@ Click `Conversion Metrics` to generate a table that shows counts of conversions 
 ### TODO
 
 - Research conversion types that would be worth to bake in, i.e., conversions more complicated than a single multiplication.
-
-- Write code to get an update on currency exchanges.
 
 ### Note
 
