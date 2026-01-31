@@ -16,7 +16,7 @@ B -- Adds or deletes new conversion to database --> E[sqlite3]
 B -- Gets new currency exchange rates --> F[requester.go] --> E
 B -- Gets usage data --> E
 B -- Sends data back to browser --> A
-A -- makes changes in browser based on type of request --> G[] 
+A --> G[makes changes in browser based on type of request] 
 ```
 
 ### Requirements
