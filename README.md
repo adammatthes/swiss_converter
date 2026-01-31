@@ -40,6 +40,7 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 Compile and run the program:
 ```terminal
 go build
+./swiss_converter
 ```
 
 Or just run it from the root of the repository:
