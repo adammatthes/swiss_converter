@@ -4,6 +4,21 @@
 
 I have been ambivalent about what to create for a [boot.dev](https://www.boot.dev) capstone project. Some of the course material suggested making something that isolates certain aspects of backend development. With that mind, I decided to make a conversion tool; it seemed like something where the user interface wouldn't become too complicated so that I can spend more time thinking about backend features, and that's been mostly true. Like the heading says, I will probably work on another project that focuses on different backend features to round things out and learn more.
 
+### Program Flow
+
+```mermaid
+flowchart LR
+
+A[GUI in browser] -- Client side requests in JavaScript --> B[handlers.go]
+B -- Looks up conversion options --> C[conversion_options.go]
+B -- Performs conversion based on selected option --> D[convert.go]
+B -- Adds or deletes new conversion to database --> E[sqlite3]
+B -- Gets new currency exchange rates --> F[requester.go] --> E
+B -- Gets usage data --> E
+B -- Sends data back to browser --> A
+A -- makes changes in browser based on type of request --> G[] 
+```
+
 ### Requirements
 
 This tool uses Go (v1.24.4) as its backend language, and Javascript/CSS for its frontend. Installed programs incluse goose, sqlc, and sqlite3 to faciliate database actions. I was using Firefox to observe progress on the frontend; I do not know how much appearance will change in other browsers.
@@ -55,7 +70,7 @@ Click `Delete a Conversion` to generate the menu for removing a custom conversio
 
 ### Update Currency Conversion Rates
 
-While `Currency` is selected as the category, a button `Update Currencies` will appear. Clicking it will send GET requests to [exchange rates](https://www.exchange-rates.org). A paragraph will appear indicating success.
+While `Currency` is selected as the category, a button `Update Currencies` will appear. Clicking it will send GET requests to [exchange rates](https://www.exchange-rates.org). A paragraph will appear indicating success. The point of this feature is that it demonstrates reaching out to an external source and having new data in the app. I have no intention of spamming a website with every single currency combination.
 
 ### Metrics
 
