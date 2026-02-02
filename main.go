@@ -6,9 +6,30 @@ import (
 	"log"
 	"io/fs"
 	"fmt"
+	"os/exec"
+	"runtime"
+	"time"
 	"github.com/adammatthes/swiss_converter/internal/handlers"
 	"github.com/adammatthes/swiss_converter/internal/database"
 )
+
+func openBrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+		case "linux":
+			err = exec.Command("xdg-open", url).Start()
+		case "windows":
+			err = exec.Command("rundll32", "url.dll,FileProtocalHandler", url).Start()
+		case "darwin":
+			err = exec.Command("open", url).Start()
+		default:
+			err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		fmt.Printf("Error open browser: %v\n", err)
+	}
+}
 
 //go:embed static/*
 var staticFiles embed.FS
@@ -57,6 +78,13 @@ func main() {
 	mux.HandleFunc("/api/delete-conversion", app.DeleteConversion)
 	mux.HandleFunc("/api/metrics", app.GetMetrics)
 	mux.HandleFunc("/api/update-currencies", app.UpdateCurrencies)
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		url := "http://localhost:8080"
+		fmt.Printf("\nOpening %s in your browser", url)
+		openBrowser(url)
+	}()
 
 	log.Println("\nServer starting on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)
